@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小凯大人的神秘商店 · 后台</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body{background:#f6f8fc;color:#1e293b;padding:1.5rem;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto}
+.login-box{max-width:420px;margin:15vh auto;background:#fff;border-radius:1.5rem;padding:2.5rem;box-shadow:0 20px 40px rgba(0,0,0,.08);text-align:center}
+.login-box h1{font-size:1.6rem;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.login-box p{color:#64748b;font-size:.9rem;margin-bottom:1.5rem}
+.login-box input{width:100%;padding:.9rem 1.1rem;border:1.5px solid #e2e8f0;border-radius:1rem;font-size:.95rem;background:#fafcff;margin-bottom:1rem;font-family:inherit}
+.login-box input:focus{outline:none;border-color:#0f172a;background:#fff}
+.login-box button{width:100%;background:#0f172a;color:#fff;border:none;padding:.9rem;border-radius:1rem;font-weight:600;font-size:1rem;cursor:pointer}
+.login-box button:hover{background:#1e293b}
+.login-hint{font-size:.75rem;color:#94a3b8;margin-top:1rem}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.admin-header h1{font-size:1.6rem;display:flex;align-items:center;gap:.5rem}
+.logout-btn{background:#f1f5f9;border:none;padding:.6rem 1.2rem;border-radius:2rem;font-weight:500;cursor:pointer;color:#475569;font-size:.9rem;display:flex;align-items:center;gap:.4rem}
+.logout-btn:hover{background:#e2e8f0}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:1.5rem;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:1.5rem;padding:1.5rem;box-shadow:0 8px 20px rgba(0,0,0,.03);border:1px solid #edf2f7}
+.card h2{font-size:1.15rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.78rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:.35rem}
+.form-group input,.form-group textarea{width:100%;padding:.7rem 1rem;border:1.5px solid #e2e8f0;border-radius:1rem;font-size:.9rem;background:#fafcff;font-family:inherit}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:#0f172a;background:#fff}
+.form-group textarea{resize:vertical;min-height:70px}
+.media-toggle{display:flex;gap:.5rem;margin-bottom:.7rem}
+.media-toggle button{flex:1;padding:.55rem;border-radius:2rem;border:1.5px solid #e2e8f0;background:#fff;font-weight:500;font-size:.82rem;cursor:pointer;color:#475569;display:flex;align-items:center;justify-content:center;gap:5px}
+.media-toggle button.active{background:#0f172a;border-color:#0f172a;color:#fff}
+.file-wrap input[type=file]{padding:.55rem;background:#fff;border:1.5px dashed #cbd5e1;border-radius:1rem;cursor:pointer;font-size:.8rem;width:100%}
+.hint{font-size:.72rem;color:#94a3b8;text-align:center;margin-top:.5rem}
+.submit-btn{width:100%;background:#0f172a;color:#fff;border:none;padding:.85rem;border-radius:3rem;font-weight:600;font-size:.95rem;cursor:pointer;margin-top:.5rem;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.submit-btn:hover{background:#1e293b}
+.stats{display:flex;gap:.7rem;margin-bottom:1rem}
+.stat{flex:1;background:#f8fafc;border-radius:1rem;padding:.7rem 1rem;text-align:center;border:1px solid #e2e8f0}
+.stat .num{font-size:1.4rem;font-weight:700}
+.stat .lbl{font-size:.72rem;color:#64748b;margin-top:2px}
+.stat.pending .num{color:#f59e0b}
+.export-btn{width:100%;background:#059669;color:#fff;border:none;padding:.8rem;border-radius:3rem;font-weight:600;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;margin-bottom:1.2rem}
+.export-btn:hover{background:#047857}
+.export-btn:disabled{background:#cbd5e1;cursor:not-allowed}
+.product-list{list-style:none;max-height:600px;overflow-y:auto}
+.product-item{display:flex;gap:.8rem;align-items:center;padding:.8rem 0;border-bottom:1px solid #f1f5f9}
+.product-item:last-child{border-bottom:none}
+.p-thumb{width:60px;height:60px;border-radius:.75rem;background:#f1f5f9;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#cbd5e1;font-size:1.3rem}
+.p-thumb img,.p-thumb video{width:100%;height:100%;object-fit:cover}
+.p-info{flex:1;min-width:0}
+.p-name{font-weight:600;font-size:.95rem;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.p-desc{font-size:.78rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.p-price{font-weight:600;font-size:.9rem;margin-top:2px}
+.badge{background:#f59e0b;color:#fff;font-size:.65rem;padding:2px 8px;border-radius:20px;font-weight:600}
+.p-del{background:none;border:none;color:#ef4444;cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:.85rem;flex-shrink:0}
+.p-del:hover{background:#fee2e2}
+.empty-p{text-align:center;padding:2rem;color:#94a3b8;font-size:.9rem}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:1.5rem;padding:1.5rem;max-width:720px;width:100%;max-height:88vh;display:flex;flex-direction:column;gap:1rem}
+.modal h3{font-size:1.15rem;display:flex;align-items:center;gap:.5rem}
+.modal p{font-size:.85rem;color:#475569;line-height:1.5}
+.modal p code{background:#f1f5f9;padding:2px 6px;border-radius:6px;font-size:.78rem;color:#b91c1c}
+.modal textarea{width:100%;flex:1;min-height:300px;font-family:ui-monospace,Consolas,monospace;font-size:.75rem;line-height:1.5;border:1.5px solid #e2e8f0;border-radius:1rem;padding:.9rem;resize:none;background:#fafcff}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end}
+.modal-actions button{padding:.65rem 1.3rem;border-radius:2rem;border:none;font-weight:600;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:.4rem}
+.btn-primary{background:#0f172a;color:#fff}
+.btn-success{background:#059669;color:#fff}
+.btn-secondary{background:#f1f5f9;color:#475569}
+.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:.7rem 1.8rem;border-radius:50px;font-size:.88rem;opacity:0;transition:.2s;pointer-events:none;z-index:2000}
+.toast.show{opacity:1}
+.toast.error{background:#b91c1c}
+.toast.success{background:#059669}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <h1><i class="fas fa-lock"></i> 商店后台</h1>
+    <p>请输入管理密码</p>
+    <input type="password" id="pwdInput" placeholder="管理密码" autocomplete="current-password">
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> 进入后台</button>
+    <div class="login-hint">默认密码 admin2024（可在代码中修改）</div>
+  </div>
+</div>
+
+<div id="adminScreen" style="display:none">
+  <div class="wrap">
+    <div class="admin-header">
+      <h1><i class="fas fa-cog"></i> 小凯大人的神秘商店 · 后台</h1>
+      <div>
+        <button class="logout-btn" id="viewShopBtn"><i class="fas fa-store"></i> 查看前台</button>
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h2><i class="fas fa-plus-circle"></i> 上传新商品</h2>
+        <form id="uploadForm">
+          <div class="form-group">
+            <label>商品名称</label>
+            <input type="text" id="pName" required placeholder="例如：手工陶瓷杯">
+          </div>
+          <div class="form-group">
+            <label>商品介绍</label>
+            <textarea id="pDesc" required placeholder="描述商品特点..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>价格 (¥)</label>
+            <input type="number" id="pPrice" step="0.01" min="0.01" required placeholder="99.00">
+          </div>
+          <div class="form-group">
+            <label>媒体（图片或视频）</label>
+            <div class="media-toggle" id="mediaToggle">
+              <button type="button" data-type="image" class="active"><i class="fas fa-image"></i> 图片</button>
+              <button type="button" data-type="video"><i class="fas fa-video"></i> 视频</button>
+            </div>
+            <div class="file-wrap">
+              <input type="file" id="mediaFile" accept="image/*">
+            </div>
+            <div class="hint">建议先用工具压缩图片，或用图床外链</div>
+          </div>
+          <div class="form-group">
+            <label>或：图片/视频外链 URL（推荐，文件更小）</label>
+            <input type="text" id="mediaUrl" placeholder="https://example.com/image.jpg">
+          </div>
+          <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> 上架（本地）</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-boxes"></i> 商品管理</h2>
+        <div class="stats">
+          <div class="stat"><div class="num" id="cloudCount">0</div><div class="lbl">已发布</div></div>
+          <div class="stat pending"><div class="num" id="pendingCount">0</div><div class="lbl">待发布</div></div>
+        </div>
+        <button class="export-btn" id="exportBtn"><i class="fas fa-file-export"></i> 导出 products.json</button>
+        <ul class="product-list" id="productList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="exportOverlay">
+  <div class="modal">
+    <h3><i class="fas fa-file-code" style="color:#059669"></i> 导出 products.json</h3>
+    <p>复制下面全部内容，去 GitHub 仓库 → 点 <code>products.json</code> → 点铅笔编辑 → 全选删除 → 粘贴 → 提交。</p>
+    <textarea id="exportOut" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="closeExport">关闭</button>
+      <button class="btn-success" id="copyExport"><i class="fas fa-copy"></i> 复制全部</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // ★ 后台管理密码（可修改）
+  const ADMIN_PASSWORD = 'admin2024';
+
+  const $ = id => document.getElementById(id);
+  let cloudProducts = [];
+  let localProducts = [];
+  let hiddenCloudIds = [];
+  let currentMediaType = 'image';
+
+  function esc(s){const d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
+  function toast(msg,dur=2200,type=''){
+    const t=$('toast');
+    t.textContent=msg;t.className='toast show '+type;
+    clearTimeout(window._tt);
+    window._tt=setTimeout(()=>t.className='toast',dur);
+  }
+
+  function checkLogin(){
+    if(sessionStorage.getItem('admin_logged')==='1'){
+      $('loginScreen').style.display='none';
+      $('adminScreen').style.display='';
+      init();
+    }
+  }
+  $('loginBtn').addEventListener('click',doLogin);
+  $('pwdInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  function doLogin(){
+    const pwd=$('pwdInput').value;
+    if(pwd===ADMIN_PASSWORD){
+      sessionStorage.setItem('admin_logged','1');
+      $('loginScreen').style.display='none';
+      $('adminScreen').style.display='';
+      init();
+    }else{
+      toast('密码错误','','error');
+      $('pwdInput').value='';
+    }
+  }
+  $('logoutBtn').addEventListener('click',()=>{
+    sessionStorage.removeItem('admin_logged');
+    location.reload();
+  });
+  $('viewShopBtn').addEventListener('click',()=>window.open('index.html','_blank'));
+
+  async function loadCloud(){
+    try{
+      const r=await fetch('products.json?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok) throw new Error('no file');
+      const d=await r.json();
+      cloudProducts=(d&&Array.isArray(d.products))?d.products:(Array.isArray(d)?d:[]);
+    }catch(e){cloudProducts=[]}
+  }
+  function loadLocal(){
+    const oldS=localStorage.getItem('store_products');
+    const newS=localStorage.getItem('local_products');
+    if(!newS&&oldS){
+      try{const o=JSON.parse(oldS);if(Array.isArray(o))localProducts=o}catch(e){}
+      localStorage.removeItem('store_products');
+      saveLocal();
+    }else if(newS){
+      try{const o=JSON.parse(newS);if(Array.isArray(o))localProducts=o}catch(e){localProducts=[]}
+    }
+    try{const h=localStorage.getItem('hidden_cloud_ids');if(h)hiddenCloudIds=JSON.parse(h)||[]}catch(e){}
+  }
+  function saveLocal(){try{localStorage.setItem('local_products',JSON.stringify(localProducts))}catch(e){toast('本地存储已满，请压缩图片','','error')}}
+  function saveHidden(){try{localStorage.setItem('hidden_cloud_ids',JSON.stringify(hiddenCloudIds))}catch(e){}}
+
+  function getAllProducts(){
+    const hidden=new Set(hiddenCloudIds);
+    const cloud=cloudProducts.filter(p=>!hidden.has(p.id)).map(p=>({...p,_source:'cloud'}));
+    const local=localProducts.map(p=>({...p,_source:'local'}));
+    return [...cloud,...local];
+  }
+
+  function render(){
+    const all=getAllProducts();
+    const visibleCloud=cloudProducts.filter(p=>!new Set(hiddenCloudIds).has(p.id)).length;
+    $('cloudCount').textContent=visibleCloud;
+    $('pendingCount').textContent=localProducts.length;
+    $('exportBtn').disabled=(visibleCloud+localProducts.length)===0;
+
+    if(!all.length){
+      $('productList').innerHTML='<div class="empty-p">还没有商品，上传一个试试</div>';
+      return;
+    }
+    let h='';
+    all.forEach(p=>{
+      let thumb='<i class="fas fa-image"></i>';
+      if(p.mediaType==='image'&&p.mediaData) thumb=`<img src="${p.mediaData}" alt="">`;
+      else if(p.mediaType==='video'&&p.mediaData) thumb=`<video src="${p.mediaData}" muted></video>`;
+      const badge=p._source==='local'?'<span class="badge">待发布</span>':'';
+      const price=(Number(p.price)||0).toFixed(2);
+      h+=`<li class="product-item">
+        <div class="p-thumb">${thumb}</div>
+        <div class="p-info">
+          <div class="p-name">${esc(p.name)} ${badge}</div>
+          <div class="p-desc">${esc(p.description||'').substring(0,50)}</div>
+          <div class="p-price">¥${price}</div>
+        </div>
+        <button class="p-del" data-id="${p.id}" title="删除"><i class="fas fa-trash-alt"></i></button>
+      </li>`;
+    });
+    $('productList').innerHTML=h;
+    $('productList').querySelectorAll('.p-del').forEach(b=>{
+      b.addEventListener('click',()=>delProduct(b.dataset.id));
+    });
+  }
+
+  function delProduct(id){
+    const all=getAllProducts();
+    const p=all.find(x=>x.id===id);
+    if(!p) return;
+    if(p._source==='cloud'){
+      if(!confirm(`「${p.name}」已发布。\n\n是否在本地隐藏？\n（要彻底删除请到 GitHub 修改 products.json）`)) return;
+      hiddenCloudIds.push(id);saveHidden();
+      toast('已在本地隐藏');
+    }else{
+      if(!confirm(`确定删除本地商品「${p.name}」吗？`)) return;
+      localProducts=localProducts.filter(x=>x.id!==id);saveLocal();
+      toast('已删除');
+    }
+    render();
+  }
+
+  $('mediaToggle').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    $('mediaToggle').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    currentMediaType=b.dataset.type;
+    $('mediaFile').accept=currentMediaType==='image'?'image/*':'video/*';
+    $('mediaFile').value='';
+  });
+
+  $('uploadForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=$('pName').value.trim();
+    const desc=$('pDesc').value.trim();
+    const price=parseFloat($('pPrice').value);
+    const url=$('mediaUrl').value.trim();
+    const file=$('mediaFile').files[0];
+
+    if(!name||!desc||isNaN(price)||price<=0) return toast('请完整填写商品信息','','error');
+
+    const finish=(mediaData,mediaMime)=>{
+      let mt=currentMediaType;
+      if(file){
+        if(file.type.startsWith('video/')) mt='video';
+        else if(file.type.startsWith('image/')) mt='image';
+      }
+      const np={
+        id:'local-'+Date.now()+'-'+Math.random().toString(36).substring(2,6),
+        name,description:desc,price,
+        mediaType:mt,mediaData,mediaMime
+      };
+      localProducts.push(np);
+      saveLocal();
+      $('uploadForm').reset();
+      $('mediaToggle').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      $('mediaToggle').querySelector('[data-type="image"]').classList.add('active');
+      currentMediaType='image';
+      $('mediaFile').accept='image/*';
+      render();
+      toast(`「${name}」已添加，记得点导出并粘贴到 GitHub`,'','success');
+    };
+
+    if(url){
+      finish(url, null);
+    }else if(file){
+      const reader=new FileReader();
+      reader.onload=ev=>finish(ev.target.result,file.type);
+      reader.readAsDataURL(file);
+    }else{
+      finish(null,null);
+    }
+  });
+
+  $('exportBtn').addEventListener('click',()=>{
+    const hidden=new Set(hiddenCloudIds);
+    const cloud=cloudProducts.filter(p=>!hidden.has(p.id));
+    const cloudIds=new Set(cloud.map(p=>p.id));
+    const locals=localProducts.filter(p=>!cloudIds.has(p.id));
+    const all=[...cloud,...locals];
+    const cleaned=all.map(p=>({
+      id:p.id,name:p.name,description:p.description,
+      price:Number(p.price)||0,
+      mediaType:p.mediaType||'image',
+      mediaData:p.mediaData||null,
+      mediaMime:p.mediaMime||null
+    }));
+    const data={version:1,updatedAt:new Date().toISOString(),products:cleaned};
+    const txt=JSON.stringify(data,null,2);
+    $('exportOut').value=txt;
+    const sizeKB=(new Blob([txt]).size/1024).toFixed(1);
+    if(sizeKB>500) toast(`JSON 达 ${sizeKB}KB，建议图片用外链`,'','error');
+    $('exportOverlay').classList.add('show');
+  });
+  $('closeExport').addEventListener('click',()=>$('exportOverlay').classList.remove('show'));
+  $('exportOverlay').addEventListener('click',e=>{if(e.target===$('exportOverlay'))$('exportOverlay').classList.remove('show')});
+  $('copyExport').addEventListener('click',async()=>{
+    const txt=$('exportOut').value;
+    try{await navigator.clipboard.writeText(txt);toast('已复制，去 GitHub 粘贴','','success')}
+    catch(e){$('exportOut').select();document.execCommand('copy');toast('已复制','','success')}
+  });
+
+  async function init(){
+    loadLocal();
+    await loadCloud();
+    render();
+  }
+
+  checkLogin();
+})();
+</script>
+</body>
+</html>
